@@ -18,7 +18,7 @@ def get_deployment_client():
 
 
 def generate_certificate(service_name):
-    ssl_config = open("./openssl_conf").read()
+    ssl_config = open("openssl_conf").read()
 
     f = open(f"./openssl-{service_name}.cnf", "a")
     f.write(ssl_config.format(service_name=service_name))
@@ -41,7 +41,7 @@ def generate_certificate(service_name):
 
 def create_certificate(claim_name, namespace, service_name, secret_name):
     key, cert = generate_certificate(service_name)
-    secrets = open("./secret.yaml", 'rt').read()
+    secrets = open("secret.yaml", 'rt').read()
     return secrets.format(secret_name=secret_name, key=key, cert=cert, claim=claim_name, namespace=namespace)
 
 

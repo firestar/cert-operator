@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cert-operator
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      application: cert-operator
+  template:
+    metadata:
+      labels:
+        application: cert-operator
+    spec:
+      serviceAccountName: cert-account
+      containers:
+      - name: cert-operator
+        image: firestarthehack/cert-operator
