@@ -10,14 +10,11 @@ metadata:
   name: cert-role-cluster
 rules:
   - apiGroups: [""]
-    resources: [pods, deployments]
-    verbs: [create, patch]
-
-  # Framework: knowing which other operators are running (i.e. peering).
+    resources: [events, pods, deployments]
+    verbs: [create, patch, resume, list, get, watch]
   - apiGroups: [kopf.dev]
     resources: [certificategenerationclaims]
-    verbs: [create, patch]
-
+    verbs: [ create, patch, resume, list, get, watch ]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -30,3 +27,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: cert-account
+    namespace: default
