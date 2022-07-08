@@ -112,7 +112,7 @@ async def create_deployment_fn(body, **kwargs):
     service_namespace = f"{cgc_name}-{namespace}"
     secret_name = f"cgc-{cgc_name}"
 
-    v1api = pykube.HTTPClient(pykube.KubeConfig.from_file())
+    v1api = pykube.HTTPClient(pykube.KubeConfig.from_env())
     manifest = pykube.Deployment.objects(v1api).get_by_name(deployment_name)
 
     if not secret_exists(secret_name, namespace):
@@ -182,7 +182,7 @@ async def resume_deployment_fn(body, **kwargs):
     service_namespace = f"{cgc_name}-{namespace}"
     secret_name = f"cgc-{cgc_name}"
 
-    v1api = pykube.HTTPClient(pykube.KubeConfig.from_file())
+    v1api = pykube.HTTPClient(pykube.KubeConfig.from_env())
     manifest = pykube.Deployment.objects(v1api).get_by_name(deployment_name)
 
     if not secret_exists(secret_name, namespace):
