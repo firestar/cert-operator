@@ -11,12 +11,6 @@ from kubernetes import config, dynamic, client
 from kubernetes.client import api_client, ApiException
 
 
-def get_deployment_client():
-    return dynamic.DynamicClient(
-        api_client.ApiClient(configuration=config.load_kube_config())
-    )
-
-
 def generate_certificate(service_name):
     ssl_config = open("openssl_conf").read()
 
@@ -103,7 +97,6 @@ def resume_cgc_fn(body, **kwargs):
 
 @kopf.on.create('deployment', annotations={'cgc': kopf.PRESENT})
 async def create_deployment_fn(body, **kwargs):
-    api = get_deployment_client().resources.get(api_version="apps/v1", kind="Deployment")
 
 
     namespace = body['metadata']['namespace']
@@ -174,7 +167,6 @@ async def create_deployment_fn(body, **kwargs):
 
 @kopf.on.resume('deployment', annotations={'cgc': kopf.PRESENT})
 async def resume_deployment_fn(body, **kwargs):
-    api = get_deployment_client().resources.get(api_version="apps/v1", kind="Deployment")
 
     namespace = body['metadata']['namespace']
     deployment_name = body['metadata']['name']
