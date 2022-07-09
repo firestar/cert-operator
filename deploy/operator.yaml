@@ -18,3 +18,5 @@ spec:
       containers:
       - name: cert-operator
         image: firestarthehack/cert-operator
+        command: ["kopf"]
+        args: ['run','main.py','--verbose']
