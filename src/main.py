@@ -134,9 +134,15 @@ async def create_deployment_fn(body, **kwargs):
                 "mountPath": "/web/cert/"
             }
         )
+    if 'volumes' not in manifest.obj['spec']['template']['spec']:
+        manifest.obj['spec']['template']['spec']['volumes'] = []
+    else:
+        for vol in manifest.obj['spec']['template']['spec']['volumes']:
+            if vol['name'] == f"key-{cgc_name}":
+                print(f"{deployment_name} already setup for CGC secrets")
+                return
 
-
-    manifest.obj['spec']['template']['spec']['volumes'] = [
+    manifest.obj['spec']['template']['spec']['volumes'].append(
         {
             "name": f"key-{cgc_name}",
             "secret": {
@@ -148,7 +154,9 @@ async def create_deployment_fn(body, **kwargs):
                     }
                 ]
             }
-        },
+        }
+    )
+    manifest.obj['spec']['template']['spec']['volumes'].append(
         {
             "name": f"cert-{cgc_name}",
             "secret": {
@@ -161,7 +169,7 @@ async def create_deployment_fn(body, **kwargs):
                 ]
             }
         }
-    ]
+    )
 
     manifest.update()
 
@@ -204,7 +212,15 @@ async def resume_deployment_fn(body, **kwargs):
             }
         )
 
-    manifest.obj['spec']['template']['spec']['volumes'] = [
+    if 'volumes' not in manifest.obj['spec']['template']['spec']:
+        manifest.obj['spec']['template']['spec']['volumes'] = []
+    else:
+        for vol in manifest.obj['spec']['template']['spec']['volumes']:
+            if vol['name'] == f"key-{cgc_name}":
+                print(f"{deployment_name} already setup for CGC secrets")
+                return
+
+    manifest.obj['spec']['template']['spec']['volumes'].append(
         {
             "name": f"key-{cgc_name}",
             "secret": {
@@ -216,7 +232,9 @@ async def resume_deployment_fn(body, **kwargs):
                     }
                 ]
             }
-        },
+        }
+    )
+    manifest.obj['spec']['template']['spec']['volumes'].append(
         {
             "name": f"cert-{cgc_name}",
             "secret": {
@@ -229,6 +247,6 @@ async def resume_deployment_fn(body, **kwargs):
                 ]
             }
         }
-    ]
+    )
 
     manifest.update()
