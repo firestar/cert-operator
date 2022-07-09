@@ -10,11 +10,11 @@ import kubernetes
 from kubernetes.client import ApiException
 
 
-def generate_certificate(service_name):
+def generate_certificate(hostname, service_name):
     ssl_config = open("openssl_conf").read()
 
     f = open(f"./openssl-{service_name}.cnf", "a")
-    f.write(ssl_config.format(service_name=service_name))
+    f.write(ssl_config.format(hostname=hostname, service_name=service_name))
     f.close()
 
     os.system(f"openssl req -x509 -config ./openssl-{service_name}.cnf -nodes -days 365 -newkey rsa:2048 -keyout "
@@ -32,8 +32,8 @@ def generate_certificate(service_name):
     return key, cert
 
 
-def create_certificate(claim_name, namespace, service_name, secret_name):
-    key, cert = generate_certificate(service_name)
+def create_certificate(hostname, claim_name, namespace, service_name, secret_name):
+    key, cert = generate_certificate(hostname, service_name)
     secrets = open("secret.yaml", 'rt').read()
     return secrets.format(secret_name=secret_name, key=key, cert=cert, claim=claim_name, namespace=namespace)
 
@@ -53,11 +53,12 @@ def create_cgc_fn(body, **kwargs):
     api = kubernetes.client.CoreV1Api()
     claim_name = body['metadata']['name']
     namespace = body['metadata']['namespace']
+    hostname = body['spec']['host']
     service_namespace = f"{claim_name}-{namespace}"
     secret_name = f"cgc-{claim_name}"
 
     if not secret_exists(secret_name, namespace):
-        yaml_text = create_certificate(claim_name, namespace, service_namespace, secret_name)
+        yaml_text = create_certificate(hostname, claim_name, namespace, service_namespace, secret_name)
 
         logging.info(f"generate new certificate: {claim_name} in {namespace}")
         data = yaml.safe_load(yaml_text)
