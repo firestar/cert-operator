@@ -7,8 +7,7 @@ import os
 import pykube
 import yaml
 import kubernetes
-from kubernetes import config, dynamic, client
-from kubernetes.client import api_client, ApiException
+from kubernetes.client import ApiException
 
 
 def generate_certificate(service_name):
@@ -21,8 +20,8 @@ def generate_certificate(service_name):
     os.system(f"openssl req -x509 -config ./openssl-{service_name}.cnf -nodes -days 365 -newkey rsa:2048 -keyout "
               f"./web-{service_name}.key -out ./web-{service_name}.crt")
 
-    os.system("cat ./web-" + service_name + ".key | base64 > ./web-" + service_name + ".key.b64")
-    os.system("cat ./web-" + service_name + ".crt | base64 > ./web-" + service_name + ".crt.b64")
+    os.system("cat ./web-" + service_name + ".key | base64 -w 0 > ./web-" + service_name + ".key.b64")
+    os.system("cat ./web-" + service_name + ".crt | base64 -w 0 > ./web-" + service_name + ".crt.b64")
     key = open("./web-" + service_name + ".key.b64").read()
     cert = open("./web-" + service_name + ".crt.b64").read()
     os.remove("./web-" + service_name + ".crt")
