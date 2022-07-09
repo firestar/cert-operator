@@ -79,9 +79,10 @@ def resume_cgc_fn(body, **kwargs):
     namespace = body['metadata']['namespace']
     service_namespace = f"{claim_name}-{namespace}"
     secret_name = f"cgc-{claim_name}"
+    hostname = body['spec']['host']
 
     if not secret_exists(secret_name, namespace):
-        yaml_text = create_certificate(claim_name, namespace, service_namespace, secret_name)
+        yaml_text = create_certificate(hostname, claim_name, namespace, service_namespace, secret_name)
 
         logging.info(f"generate new certificate: {claim_name} in {namespace}")
         data = yaml.safe_load(yaml_text)
